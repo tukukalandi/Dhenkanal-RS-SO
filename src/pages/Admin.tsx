@@ -159,8 +159,13 @@ export default function Admin() {
     } catch (error: any) {
       console.error(error);
       let message = 'Failed to delete document.';
-      if (error.message && error.message.includes('permission')) {
-        message = 'Permission Denied: You can only delete your own uploads.';
+      if (error.message) {
+        try {
+          const parsed = JSON.parse(error.message);
+          message = parsed.error || parsed.message || parsed;
+        } catch(e) {
+          message = error.message;
+        }
       }
       setStatus({ type: 'error', message });
     } finally {
