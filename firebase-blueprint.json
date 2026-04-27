@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "Document": {
+      "title": "Document",
+      "description": "Metadata for documents uploaded to the portal",
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string",
+          "enum": [
+            "Savings",
+            "PLI/RPLI",
+            "Domestic Mails",
+            "International Mails",
+            "Parcels",
+            "BD/CCS"
+          ],
+          "description": "The category/product this document belongs to"
+        },
+        "fileName": {
+          "type": "string",
+          "description": "Display name of the file"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of the document"
+        },
+        "fileLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "Direct link to the file (either Drive link or external link)"
+        },
+        "driveFileId": {
+          "type": "string",
+          "description": "Google Drive File ID if uploaded to Drive"
+        },
+        "uploadedBy": {
+          "type": "string",
+          "description": "User ID of the admin who uploaded the file"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of upload"
+        }
+      },
+      "required": [
+        "productId",
+        "fileName",
+        "fileLink",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "documents": {
+      "schema": "Document",
+      "description": "Collection of documents organized by product category"
+    }
+  }
+}
