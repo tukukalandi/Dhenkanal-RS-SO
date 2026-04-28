@@ -6,7 +6,27 @@ import Home from './pages/Home';
 import Admin from './pages/Admin';
 import CategoryView from './pages/CategoryView';
 import { AuthProvider } from './contexts/AuthContext';
-import { Phone, Mail, Clock, MapPin, MessageSquare } from 'lucide-react';
+import { Phone, Mail, Clock, MapPin, MessageSquare, Home as HomeIcon, HelpingHand, Shield, User } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+
+function MobileNav() {
+  return (
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-3 z-[60] flex justify-between items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-post-red-primary' : 'text-gray-400'}`}>
+        <HomeIcon size={20} />
+        <span className="text-[10px] font-black uppercase tracking-tighter">Home</span>
+      </NavLink>
+      <NavLink to="/helpdesk" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-post-red-primary' : 'text-gray-400'}`}>
+        <HelpingHand size={20} />
+        <span className="text-[10px] font-black uppercase tracking-tighter">Help</span>
+      </NavLink>
+      <NavLink to="/admin" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-post-red-primary' : 'text-gray-400'}`}>
+        <User size={20} />
+        <span className="text-[10px] font-black uppercase tracking-tighter">Admin</span>
+      </NavLink>
+    </div>
+  );
+}
 
 function Helpdesk() {
   return (
@@ -133,6 +153,7 @@ export default function App() {
             </Routes>
           </div>
           <Footer />
+          <MobileNav />
         </div>
       </Router>
     </AuthProvider>

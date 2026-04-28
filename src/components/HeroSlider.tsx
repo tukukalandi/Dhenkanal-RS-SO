@@ -73,7 +73,7 @@ export default function HeroSlider() {
   };
 
   return (
-    <div className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-gray-900 mb-8">
+    <div className="relative w-full h-[500px] md:h-[600px] overflow-hidden bg-gray-900 mb-8">
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={current}
@@ -114,7 +114,7 @@ export default function HeroSlider() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none mb-6 drop-shadow-2xl"
+              className="text-3xl md:text-7xl font-black text-white uppercase tracking-tighter leading-tight md:leading-none mb-6 drop-shadow-2xl"
             >
               {slides[current].title}
             </motion.h1>
@@ -122,7 +122,7 @@ export default function HeroSlider() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-white/80 max-w-xl font-medium leading-relaxed mb-10"
+              className="text-base md:text-xl text-white/80 max-w-xl font-medium leading-relaxed mb-10"
             >
               {slides[current].subtitle}
             </motion.p>
@@ -140,16 +140,16 @@ export default function HeroSlider() {
       </motion.div>
     </AnimatePresence>
 
-      {/* Manual Controls - Arrows */}
+      {/* Manual Controls - Arrows - Hidden on small mobile */}
       <button 
         onClick={prevSlide}
-        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-post-yellow text-post-red-primary hover:scale-110 shadow-lg rounded-full transition-all group"
+        className="hidden sm:flex absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center bg-post-yellow text-post-red-primary hover:scale-110 shadow-lg rounded-full transition-all group"
       >
         <ChevronLeft className="group-hover:-translate-x-0.5 transition-transform" />
       </button>
       <button 
         onClick={nextSlide}
-        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-post-yellow text-post-red-primary hover:scale-110 shadow-lg rounded-full transition-all group"
+        className="hidden sm:flex absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center bg-post-yellow text-post-red-primary hover:scale-110 shadow-lg rounded-full transition-all group"
       >
         <ChevronRight className="group-hover:translate-x-0.5 transition-transform" />
       </button>

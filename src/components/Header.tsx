@@ -17,13 +17,14 @@ export default function Header() {
 
   const menuItems = [
     { name: 'Home', path: '/' },
-    { name: 'Admin Portal', path: '/admin' },
+    { name: 'Helpdesk', path: '/helpdesk' },
     { name: 'Savings', path: '/category/Savings' },
     { name: 'PLI/RPLI', path: '/category/PLI-RPLI' },
     { name: 'Domestic Mails', path: '/category/Domestic-Mails' },
     { name: 'International Mails', path: '/category/International-Mails' },
     { name: 'Parcels', path: '/category/Parcels' },
     { name: 'BD/CCS', path: '/category/BD-CCS' },
+    { name: 'Admin Portal', path: '/admin' },
   ];
 
   return (
@@ -36,7 +37,7 @@ export default function Header() {
             <span className="font-medium">Language / भाषा</span>
           </div>
           <span className="opacity-40">|</span>
-          <div className="flex items-center gap-1">
+          <div className="hidden sm:flex items-center gap-1">
             <Clock size={14} />
             <span>Date: {date}</span>
           </div>
@@ -48,24 +49,24 @@ export default function Header() {
       </div>
 
       {/* Bar 2: Branding (Emblem, Name, India Post Logo) */}
-      <div className="h-24 bg-white border-b border-gray-100 px-6 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="h-20 md:h-24 bg-white border-b border-gray-100 px-4 md:px-6 flex items-center justify-between sticky top-0 md:relative z-50">
+        <div className="flex items-center gap-2 md:gap-4">
           <img 
             src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" 
             alt="National Emblem" 
-            className="h-14 w-auto"
+            className="h-10 md:h-14 w-auto"
           />
           <div className="flex flex-col">
-            <h1 className="text-xl md:text-3xl font-black text-post-red-primary tracking-tighter leading-none uppercase">
-              Dhenkanal RS SO Website
+            <h1 className="text-lg md:text-3xl font-black text-post-red-primary tracking-tighter leading-none uppercase">
+              Dhenkanal RS SO
             </h1>
-            <span className="text-[10px] md:text-xs text-gray-500 font-bold tracking-[0.2em] mt-1 uppercase">
-              Dhenkanal Postal Division | Odisha Circle
+            <span className="text-[8px] md:text-xs text-gray-500 font-bold tracking-[0.1em] md:tracking-[0.2em] mt-1 uppercase">
+              Dhenkanal Postal Division
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 md:gap-8">
+        <div className="flex items-center gap-2 md:gap-8">
           <div className="hidden lg:flex items-center gap-3 border border-gray-200 rounded-full px-4 py-2 bg-gray-50 focus-within:border-post-red-primary transition-all">
             <Search size={16} className="text-gray-400" />
             <input type="text" placeholder="Search services..." className="outline-none text-xs w-40 bg-transparent font-medium" />
@@ -74,32 +75,30 @@ export default function Header() {
           <img 
             src="https://upload.wikimedia.org/wikipedia/en/3/32/India_Post.svg" 
             alt="India Post Logo" 
-            className="h-16 w-auto"
+            className="h-10 md:h-16 w-auto"
           />
           
           <button 
             onClick={() => setIsMenuOpen(true)}
-            className="p-2 hover:bg-gray-50 rounded-lg flex flex-col items-center justify-center transition-colors group"
+            className="p-2 md:p-3 bg-gray-50 hover:bg-post-yellow-light rounded-xl flex items-center justify-center transition-all group border border-gray-100 md:border-transparent active:scale-95"
           >
-            <div className="w-6 h-0.5 bg-gray-800 mb-1.5 group-hover:bg-post-red-primary transition-colors"></div>
-            <div className="w-6 h-0.5 bg-gray-800 mb-1.5 group-hover:bg-post-red-primary transition-colors"></div>
-            <div className="w-6 h-0.5 bg-gray-800 group-hover:bg-post-red-primary transition-colors"></div>
-            <span className="text-[10px] font-bold uppercase mt-1 text-gray-500 hidden md:block">Menu</span>
+            <Menu size={20} className="md:w-6 md:h-6 text-post-red-primary" />
+            <span className="text-[10px] font-black uppercase ml-2 text-gray-700 hidden md:block tracking-widest">Menu</span>
           </button>
         </div>
       </div>
 
-      {/* Bar 3: Navigation */}
-      <nav className="h-12 bg-post-red-primary text-white flex items-center px-6 relative z-40 shadow-lg">
-        <div className="flex items-stretch h-full space-x-1">
-          <Link to="/" className="flex items-center px-6 text-white font-bold text-xs hover:bg-post-red-dark border-b-4 border-transparent hover:border-post-yellow transition-all uppercase tracking-wider">
+      {/* Bar 3: Navigation - Hidden on mobile, but we will add a secondary mini nav or keep it visible if requested */}
+      <nav className="h-10 md:h-12 bg-post-red-primary text-white flex items-center px-4 md:px-6 relative z-40 shadow-lg overflow-x-auto no-scrollbar">
+        <div className="flex items-stretch h-full space-x-1 whitespace-nowrap">
+          <Link to="/" className="flex items-center px-4 md:px-6 text-white font-bold text-[10px] md:text-xs hover:bg-post-red-dark border-b-2 md:border-b-4 border-transparent hover:border-post-yellow transition-all uppercase tracking-wider">
             Home
           </Link>
-          <Link to="/helpdesk" className="flex items-center px-6 text-white font-bold text-xs hover:bg-post-red-dark transition-all uppercase tracking-wider">
+          <Link to="/helpdesk" className="flex items-center px-4 md:px-6 text-white font-bold text-[10px] md:text-xs hover:bg-post-red-dark transition-all uppercase tracking-wider">
             Helpdesk
           </Link>
           
-          <div className="relative group flex items-center">
+          <div className="relative group hidden md:flex items-center">
             <button 
               onClick={() => setIsOthersOpen(!isOthersOpen)}
               className={`flex items-center px-6 h-full text-white font-bold text-xs transition-all uppercase tracking-wider gap-2 ${isOthersOpen ? 'bg-post-red-dark' : 'hover:bg-post-red-dark'}`}
@@ -173,17 +172,41 @@ export default function Header() {
                 </button>
               </div>
               <div className="p-6">
-                {menuItems.map((item) => (
-                  <Link 
-                    key={item.path} 
-                    to={item.path} 
-                    className="flex items-center justify-between py-4 px-4 rounded-xl hover:bg-post-yellow-light text-gray-800 font-bold border-b border-gray-50 last:border-0 transition-all group"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span className="text-sm uppercase tracking-wide group-hover:text-post-red-primary">{item.name}</span>
-                    <ChevronDown size={16} className="-rotate-90 text-gray-300 group-hover:text-post-red-primary" />
-                  </Link>
-                ))}
+                <div className="mb-4">
+                  <h3 className="text-[10px] font-black text-post-red-primary uppercase tracking-[0.2em] mb-4 px-4">Navigation</h3>
+                  {menuItems.map((item) => (
+                    <Link 
+                      key={item.path} 
+                      to={item.path} 
+                      className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-post-yellow-light text-gray-800 font-bold border-b border-gray-50 last:border-0 transition-all group"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span className="text-[11px] uppercase tracking-wide group-hover:text-post-red-primary">{item.name}</span>
+                      <ChevronDown size={14} className="-rotate-90 text-gray-300 group-hover:text-post-red-primary" />
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="mt-8">
+                  <h3 className="text-[10px] font-black text-post-red-primary uppercase tracking-[0.2em] mb-4 px-4">Important Links</h3>
+                  {[
+                    { name: 'India Post Website', url: 'https://www.indiapost.gov.in/' },
+                    { name: 'Dhenkanal Postal Division', url: 'https://dhenkanalpostaldivision.org/' },
+                    { name: 'Office Directory', url: 'https://office-directory.vercel.app/' },
+                  ].map((link) => (
+                    <a 
+                      key={link.name} 
+                      href={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-post-yellow-light text-gray-800 font-bold border-b border-gray-50 last:border-0 transition-all group"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span className="text-[11px] uppercase tracking-wide group-hover:text-post-red-primary">{link.name}</span>
+                      <Globe size={14} className="text-gray-300" />
+                    </a>
+                  ))}
+                </div>
               </div>
               <div className="mt-12 p-8 text-center border-t border-gray-50">
                 <img 
