@@ -20,9 +20,14 @@ service cloud.firestore {
     }
 
     function isValidDocument(data) {
-      return data.productId in ['Savings', 'PLI/RPLI', 'Domestic Mails', 'International Mails', 'Parcels', 'BD/CCS'] &&
+      return data.productId in ['Savings', 'PLI/RPLI', 'Domestic Mails', 'International Mails', 'Parcels', 'BD/CCS', 'PO Orders/Rules', 'Official Documents', 'Others'] &&
              data.fileName is string && data.fileName.size() <= 256 &&
-             data.fileLink is string && data.fileLink.size() <= 1024;
+             data.fileLink is string && data.fileLink.size() <= 1024 &&
+             data.uploadedBy == request.auth.uid &&
+             data.createdAt == request.time &&
+             (data.subCategory == null || (data.subCategory is string && data.subCategory.size() <= 128)) &&
+             (data.description == null || (data.description is string && data.description.size() <= 2048)) &&
+             (data.driveFileId == null || (data.driveFileId is string && data.driveFileId.size() <= 256));
     }
 
     // Documents collection
@@ -31,14 +36,16 @@ service cloud.firestore {
       
       allow create: if isSignedIn() && 
                     isValidDocument(request.resource.data) &&
-                    request.resource.data.uploadedBy == request.auth.uid &&
-                    request.resource.data.createdAt == request.time;
+                    request.resource.data.keys().hasAll(['productId', 'fileName', 'fileLink', 'uploadedBy', 'createdAt']) &&
+                    request.resource.data.keys().size() <= 8;
 
-      allow update: if (isSignedIn() &&
-                    isValidDocument(request.resource.data) &&
-                    request.resource.data.uploadedBy == resource.data.uploadedBy &&
-                    request.resource.data.createdAt == resource.data.createdAt &&
-                    (request.resource.data.uploadedBy == request.auth.uid || isAdmin())) || isAdmin();
+      allow update: if isSignedIn() && (
+                    isAdmin() || 
+                    (resource.data.uploadedBy == request.auth.uid && 
+                     isValidDocument(request.resource.data) &&
+                     request.resource.data.uploadedBy == resource.data.uploadedBy &&
+                     request.resource.data.createdAt == resource.data.createdAt)
+                  );
       
       allow delete: if isAdmin() || (isSignedIn() && resource.data.uploadedBy == request.auth.uid);
     }
