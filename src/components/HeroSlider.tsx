@@ -5,23 +5,30 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const slides = [
   {
     id: 1,
-    image: 'https://images.unsplash.com/photo-1596460391300-2d888147779f?q=80&w=2670&auto=format&fit=crop',
-    title: 'Modernizing Logistics',
-    subtitle: 'State-of-the-art sorting and delivery networks ensuring your parcels reach faster than ever.',
-    accent: 'Digital Transformation'
+    image: 'https://images.unsplash.com/photo-1590644365607-1c5a519a7a37?q=75&w=1600&auto=format&fit=crop',
+    title: 'Transforming Postal Services',
+    subtitle: 'Bringing digital efficiency and financial inclusion to every corner of India through modernized networks.',
+    accent: 'Digital India'
   },
   {
     id: 2,
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2670&auto=format&fit=crop',
-    title: 'Trusted Savings',
-    subtitle: 'From Mahila Samman to Sukanya Samriddhi, we secure the future of every Indian citizen.',
-    accent: 'Financial Inclusion'
+    image: 'https://images.unsplash.com/photo-1621360841013-c7683c659ec6?q=75&w=1600&auto=format&fit=crop',
+    title: 'Sukanya Samriddhi Yojana',
+    subtitle: 'Securing the bright future of your girl child with the trust and reliability of India Post savings.',
+    accent: 'Financial Empowerment'
   },
   {
     id: 3,
-    image: 'https://images.unsplash.com/photo-1566121316353-3837a71f76da?q=80&w=2670&auto=format&fit=crop',
-    title: 'Last Mile Connection',
-    subtitle: 'Crossing every geographical barrier to deliver smiles and essential services to your doorstep.',
+    image: 'https://images.unsplash.com/photo-1454165833762-0102409830e7?q=75&w=1600&auto=format&fit=crop',
+    title: 'Postal Life Insurance',
+    subtitle: 'High returns and low premiums. Secure your family\'s future with India\'s oldest and most trusted insurer.',
+    accent: 'Trusted Protection'
+  },
+  {
+    id: 4,
+    image: 'https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=75&w=1600&auto=format&fit=crop',
+    title: 'Modernizing Logistics',
+    subtitle: 'From Speed Post to parcel services, we deliver your trust across the global network with precision.',
     accent: 'Dak Seva, Jan Seva'
   }
 ];
@@ -83,22 +90,23 @@ export default function HeroSlider() {
           className="absolute inset-0"
         >
           {/* Background Image with Overlay */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${slides[current].image})` }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-          </div>
+          <img 
+            src={slides[current].image} 
+            alt={slides[current].title}
+            className="absolute inset-0 w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-black/60 md:bg-gradient-to-r md:from-post-red-dark/95 md:via-post-red-dark/40 md:to-transparent" />
 
           {/* Content */}
           <div className="relative h-full max-w-7xl mx-auto w-full flex flex-col justify-center px-4 md:px-8">
             <div className="max-w-3xl relative">
-              <div className="absolute -left-4 md:-left-8 top-0 bottom-0 w-1.5 bg-post-red-primary" />
+              <div className="absolute -left-4 md:-left-8 top-0 bottom-0 w-2 bg-post-yellow" />
               <motion.span
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-post-yellow font-black text-xs md:text-sm uppercase tracking-[0.4em] mb-4"
+              className="text-post-yellow font-black text-xs md:text-sm uppercase tracking-[0.4em] mb-4 block"
             >
               {slides[current].accent}
             </motion.span>
@@ -106,7 +114,7 @@ export default function HeroSlider() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none mb-6"
+              className="text-4xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none mb-6 drop-shadow-2xl"
             >
               {slides[current].title}
             </motion.h1>
@@ -114,7 +122,7 @@ export default function HeroSlider() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-gray-300 max-w-xl font-medium leading-relaxed mb-10"
+              className="text-lg md:text-xl text-white/80 max-w-xl font-medium leading-relaxed mb-10"
             >
               {slides[current].subtitle}
             </motion.p>
@@ -123,7 +131,7 @@ export default function HeroSlider() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <button className="bg-post-red-primary text-white px-8 py-4 rounded-lg font-black uppercase tracking-widest text-xs hover:bg-post-red-dark transition-all shadow-xl shadow-red-900/20 active:scale-95">
+              <button className="bg-post-yellow text-post-red-primary px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-xl shadow-black/40 active:scale-95">
                 Explore Services
               </button>
             </motion.div>
@@ -135,13 +143,13 @@ export default function HeroSlider() {
       {/* Manual Controls - Arrows */}
       <button 
         onClick={prevSlide}
-        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all group"
+        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-post-yellow text-post-red-primary hover:scale-110 shadow-lg rounded-full transition-all group"
       >
         <ChevronLeft className="group-hover:-translate-x-0.5 transition-transform" />
       </button>
       <button 
         onClick={nextSlide}
-        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all group"
+        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-post-yellow text-post-red-primary hover:scale-110 shadow-lg rounded-full transition-all group"
       >
         <ChevronRight className="group-hover:translate-x-0.5 transition-transform" />
       </button>

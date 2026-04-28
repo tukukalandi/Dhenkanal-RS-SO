@@ -117,13 +117,14 @@ export default function CategoryView() {
       ) : Object.keys(filteredGroups).length > 0 ? (
         <div className="space-y-12">
           {Object.entries(filteredGroups).map(([subCategory, docs]) => (
-            <div key={subCategory} className="space-y-6">
+            <div key={subCategory} className="bg-white/40 rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm space-y-8">
               <div className="flex items-center gap-4">
-                <div className="h-px bg-gray-200 flex-1"></div>
-                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-post-red-primary bg-gray-50/50 px-4 py-1 rounded-full border border-gray-100">
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-post-red-primary bg-post-yellow-light px-6 py-2 rounded-lg border border-post-yellow flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-post-red-primary animate-pulse" />
                   {subCategory}
                 </h3>
                 <div className="h-px bg-gray-200 flex-1"></div>
+                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{docs.length} Items</span>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -133,7 +134,7 @@ export default function CategoryView() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm hover:shadow-xl transition-all border-l-4 border-l-post-red-primary flex gap-6 items-start group"
+                    className="bg-white p-6 rounded-xl border border-gray-100 shadow-md hover:shadow-xl transition-all border-l-4 border-l-post-red-primary flex gap-6 items-start group"
                   >
                     <div className="bg-post-yellow-light text-post-red-primary p-4 rounded-lg group-hover:scale-110 transition-transform">
                       <FileText size={24} />
