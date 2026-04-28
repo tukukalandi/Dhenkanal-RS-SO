@@ -2,31 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import BottomNav from './components/BottomNav';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import CategoryView from './pages/CategoryView';
 import { AuthProvider } from './contexts/AuthContext';
-import { Phone, Mail, Clock, MapPin, MessageSquare, Home as HomeIcon, HelpingHand, Shield, User } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
-
-function MobileNav() {
-  return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-3 z-[60] flex justify-between items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-      <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-post-red-primary' : 'text-gray-400'}`}>
-        <HomeIcon size={20} />
-        <span className="text-[10px] font-black uppercase tracking-tighter">Home</span>
-      </NavLink>
-      <NavLink to="/helpdesk" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-post-red-primary' : 'text-gray-400'}`}>
-        <HelpingHand size={20} />
-        <span className="text-[10px] font-black uppercase tracking-tighter">Help</span>
-      </NavLink>
-      <NavLink to="/admin" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-post-red-primary' : 'text-gray-400'}`}>
-        <User size={20} />
-        <span className="text-[10px] font-black uppercase tracking-tighter">Admin</span>
-      </NavLink>
-    </div>
-  );
-}
+import { Phone, Mail, Clock, MapPin, MessageSquare } from 'lucide-react';
 
 function Helpdesk() {
   return (
@@ -144,7 +125,7 @@ export default function App() {
       <Router>
         <div className="min-h-screen flex flex-col bg-[#f8f9fa] selection:bg-post-yellow selection:text-post-red-primary">
           <Header />
-          <div className="flex-grow">
+          <div className="flex-grow pb-20 md:pb-0">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/admin" element={<Admin />} />
@@ -152,8 +133,8 @@ export default function App() {
               <Route path="/category/:categoryId" element={<CategoryView />} />
             </Routes>
           </div>
+          <BottomNav />
           <Footer />
-          <MobileNav />
         </div>
       </Router>
     </AuthProvider>
