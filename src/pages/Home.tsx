@@ -1,30 +1,44 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
+import HeroSlider from '../components/HeroSlider';
+import NewsMarquee from '../components/NewsMarquee';
 import { 
   PiggyBank, 
   ShieldCheck, 
   Send, 
   Globe2, 
   Package, 
-  Briefcase 
+  Briefcase,
+  Scale,
+  FileSearch,
+  MoreHorizontal
 } from 'lucide-react';
 
 const categories = [
   { name: 'Savings', icon: PiggyBank, color: 'bg-emerald-500', path: '/category/Savings' },
   { name: 'PLI/RPLI', icon: ShieldCheck, color: 'bg-blue-500', path: '/category/PLI-RPLI' },
-  { name: 'Domestic Mails', icon: Send, color: 'bg-orange-500', path: '/category/Domestic Mails' },
-  { name: 'International Mails', icon: Globe2, color: 'bg-indigo-500', path: '/category/International Mails' },
+  { name: 'Domestic Mails', icon: Send, color: 'bg-orange-500', path: '/category/Domestic-Mails' },
+  { name: 'International Mails', icon: Globe2, color: 'bg-indigo-500', path: '/category/International-Mails' },
   { name: 'Parcels', icon: Package, color: 'bg-amber-500', path: '/category/Parcels' },
   { name: 'BD/CCS', icon: Briefcase, color: 'bg-rose-500', path: '/category/BD-CCS' },
+  { name: 'PO Orders/Rules', icon: Scale, color: 'bg-violet-500', path: '/category/PO-Orders-Rules' },
+  { name: 'Official Documents', icon: FileSearch, color: 'bg-cyan-500', path: '/category/Official-Documents' },
+  { name: 'Others', icon: MoreHorizontal, color: 'bg-slate-500', path: '/category/Others' },
 ];
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <main className="max-w-7xl mx-auto p-4 md:p-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+    <main className="w-full">
+      <div className="w-full">
+        <HeroSlider />
+      </div>
+      
+      <div className="max-w-7xl mx-auto p-4 md:p-8">
+        <NewsMarquee />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         {categories.map((cat, index) => (
           <motion.div
             key={cat.name}
@@ -70,6 +84,7 @@ export default function Home() {
           Operational
         </div>
       </div>
-    </main>
+    </div>
+  </main>
   );
 }

@@ -75,12 +75,16 @@ const PRODUCT_CATEGORIES = [
   'Domestic Mails',
   'International Mails',
   'Parcels',
-  'BD/CCS'
+  'BD/CCS',
+  'PO Orders/Rules',
+  'Official Documents',
+  'Others'
 ];
 
 interface Document {
   id: string;
   productId: string;
+  subCategory?: string;
   fileName: string;
   description: string;
   fileLink: string;
@@ -90,10 +94,11 @@ interface Document {
 }
 
 export default function Admin() {
-  const { user, login, accessToken } = useAuth();
+  const { user, login, logout, accessToken } = useAuth();
   const [activeTab, setActiveTab] = useState<'upload' | 'manage'>('manage');
   const [formData, setFormData] = useState({
     product: PRODUCT_CATEGORIES[0],
+    subCategory: '',
     fileName: '',
     description: '',
     fileLink: '',
@@ -182,6 +187,7 @@ export default function Admin() {
       const docRef = doc(db, 'documents', editingDoc.id);
       await updateDoc(docRef, {
         productId: editingDoc.productId,
+        subCategory: editingDoc.subCategory || '',
         fileName: editingDoc.fileName,
         description: editingDoc.description,
         fileLink: editingDoc.fileLink
@@ -227,12 +233,19 @@ export default function Admin() {
 
       if (file) {
         if (!accessToken) {
-          throw new Error('No Google access token found. Please re-login.');
+          throw new Error('AUTH_ERROR: Your session has expired. Please sign out and sign in again.');
         }
-        const driveRes = await uploadToDrive(file, accessToken);
-        finalLink = driveRes.webViewLink;
-        driveId = driveRes.id;
-        await makeFilePublic(driveId, accessToken);
+        try {
+          const driveRes = await uploadToDrive(file, accessToken);
+          finalLink = driveRes.webViewLink;
+          driveId = driveRes.id;
+          await makeFilePublic(driveId, accessToken);
+        } catch (driveErr: any) {
+          if (driveErr.message.includes('AUTH_ERROR')) {
+            throw driveErr;
+          }
+          throw new Error(`Drive Upload Error: ${driveErr.message}`);
+        }
       }
 
       if (!finalLink) {
@@ -242,6 +255,7 @@ export default function Admin() {
       try {
         await addDoc(collection(db, 'documents'), {
           productId: formData.product,
+          subCategory: formData.subCategory.trim(),
           fileName: formData.fileName,
           description: formData.description,
           fileLink: finalLink,
@@ -254,7 +268,7 @@ export default function Admin() {
       }
 
       setStatus({ type: 'success', message: 'Document uploaded and registered successfully!' });
-      setFormData({ product: PRODUCT_CATEGORIES[0], fileName: '', description: '', fileLink: '' });
+      setFormData({ product: PRODUCT_CATEGORIES[0], subCategory: '', fileName: '', description: '', fileLink: '' });
       setFile(null);
       setActiveTab('manage');
       fetchDocuments();
@@ -303,9 +317,19 @@ export default function Admin() {
           animate={{ opacity: 1, y: 0 }}
           className={`mb-8 p-4 rounded-lg flex items-center justify-between gap-3 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'}`}
         >
-          <div className="flex items-center gap-3 font-bold uppercase tracking-widest text-[10px]">
-            {status.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
-            {status.message}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-3 font-bold uppercase tracking-widest text-[10px]">
+              {status.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+              {status.message}
+            </div>
+            {status.message.includes('AUTH_ERROR') && (
+              <button 
+                onClick={logout}
+                className="text-[9px] font-black underline uppercase tracking-widest mt-1 opacity-70 hover:opacity-100"
+              >
+                Sign out and reset session
+              </button>
+            )}
           </div>
           <button onClick={() => setStatus(null)} className="opacity-50 hover:opacity-100"><X size={16} /></button>
         </motion.div>
@@ -330,6 +354,18 @@ export default function Admin() {
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Sub Category (Optional)</label>
+              <input 
+                type="text"
+                value={formData.subCategory}
+                onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
+                placeholder="e.g. Circulars, Forms, Rules"
+                className="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 outline-none focus:border-post-red-primary transition-all font-medium"
+              />
+              <p className="text-[10px] text-gray-400 mt-1 font-medium">Documents with matching sub-categories will be grouped together.</p>
             </div>
 
             <div>
@@ -414,17 +450,22 @@ export default function Admin() {
                 <motion.div 
                   layout
                   key={docItem.id}
-                  className="bg-white p-6 rounded-xl border border-gray-50 shadow-sm flex items-center justify-between gap-6 hover:shadow-md transition-all group"
+                  className="bg-white p-6 rounded-xl border border-gray-50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-md transition-all group"
                 >
                   <div className="flex items-center gap-5 flex-1 min-w-0">
-                    <div className="w-12 h-12 bg-post-yellow-light rounded-lg flex items-center justify-center text-post-red-primary">
+                    <div className="w-12 h-12 bg-post-yellow-light rounded-lg flex items-center justify-center text-post-red-primary shrink-0">
                       <FileText size={20} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
                         <span className="text-[9px] font-black uppercase bg-post-red-primary text-white px-2 py-0.5 rounded tracking-widest whitespace-nowrap">
                           {docItem.productId}
                         </span>
+                        {docItem.subCategory && (
+                          <span className="text-[9px] font-black uppercase bg-post-blue text-white px-2 py-0.5 rounded tracking-widest whitespace-nowrap">
+                            {docItem.subCategory}
+                          </span>
+                        )}
                         <h4 className="font-bold text-gray-800 text-sm truncate">{docItem.fileName}</h4>
                       </div>
                       <p className="text-[10px] text-gray-400 font-medium truncate opacity-60 italic">{docItem.description || 'System entry'}</p>
@@ -498,6 +539,15 @@ export default function Admin() {
                   >
                     {PRODUCT_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                   </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Sub Category</label>
+                  <input 
+                    type="text"
+                    value={editingDoc.subCategory || ''}
+                    onChange={(e) => setEditingDoc({ ...editingDoc, subCategory: e.target.value })}
+                    className="w-full h-12 bg-gray-50 border border-gray-100 rounded-lg px-4 font-medium"
+                  />
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Title</label>

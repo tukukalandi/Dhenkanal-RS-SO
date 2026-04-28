@@ -28,6 +28,9 @@ export async function uploadToDrive(file: File, accessToken: string): Promise<Up
 
   if (!response.ok) {
     const error = await response.json();
+    if (response.status === 401) {
+      throw new Error('AUTH_ERROR: Your session has expired. Please sign out and sign in again.');
+    }
     throw new Error(error.error?.message || 'Failed to upload to Google Drive');
   }
 

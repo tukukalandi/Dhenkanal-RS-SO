@@ -12,6 +12,7 @@ interface Document {
   fileLink: string;
   createdAt: any;
   productId: string;
+  subCategory?: string;
 }
 
 export default function CategoryView() {
@@ -20,7 +21,40 @@ export default function CategoryView() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const displayCategory = categoryId?.replace('-', '/');
+  // Map URL-safe IDs back to the strings stored in Firestore
+  const categoryMap: { [key: string]: string } = {
+    'Savings': 'Savings',
+    'PLI-RPLI': 'PLI/RPLI',
+    'Domestic-Mails': 'Domestic Mails',
+    'International-Mails': 'International Mails',
+    'Parcels': 'Parcels',
+    'BD-CCS': 'BD/CCS',
+    'PO-Orders-Rules': 'PO Orders/Rules',
+    'Official-Documents': 'Official Documents',
+    'Others': 'Others'
+  };
+
+  const displayCategory = categoryId ? (categoryMap[categoryId] || categoryId.replace('-', '/')) : '';
+
+  // Group documents by sub-category
+  const groupedDocs = documents.reduce((acc, doc) => {
+    const sub = doc.subCategory || 'General Documents';
+    if (!acc[sub]) acc[sub] = [];
+    acc[sub].push(doc);
+    return acc;
+  }, {} as { [key: string]: Document[] });
+
+  // Filter grouped docs by search term
+  const filteredGroups = Object.keys(groupedDocs).reduce((acc, sub) => {
+    const matches = groupedDocs[sub].filter(doc => 
+      doc.fileName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    if (matches.length > 0) {
+      acc[sub] = matches;
+    }
+    return acc;
+  }, {} as { [key: string]: Document[] });
 
   useEffect(() => {
     async function fetchDocs() {
@@ -80,42 +114,56 @@ export default function CategoryView() {
           <Loader2 size={40} className="animate-spin text-post-red-primary mb-4" />
           <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">Synchronizing Records...</p>
         </div>
-      ) : filteredDocs.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredDocs.map((doc, index) => (
-            <motion.div
-              key={doc.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm hover:shadow-xl transition-all border-l-4 border-l-post-red-primary flex gap-6 items-start group"
-            >
-              <div className="bg-post-yellow-light text-post-red-primary p-4 rounded-lg group-hover:scale-110 transition-transform">
-                <FileText size={24} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-black text-sm text-gray-800 uppercase tracking-tight mb-2 truncate">
-                  {doc.fileName}
+      ) : Object.keys(filteredGroups).length > 0 ? (
+        <div className="space-y-12">
+          {Object.entries(filteredGroups).map(([subCategory, docs]) => (
+            <div key={subCategory} className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="h-px bg-gray-200 flex-1"></div>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-post-red-primary bg-gray-50/50 px-4 py-1 rounded-full border border-gray-100">
+                  {subCategory}
                 </h3>
-                <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mb-6 h-8 opacity-80">
-                  {doc.description || 'Official document archive entry for postal services.'}
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-                  <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">
-                    {doc.createdAt?.toDate().toLocaleDateString('en-GB') || 'LATEST'}
-                  </span>
-                  <a 
-                    href={doc.fileLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-post-red-primary text-white px-5 py-2 rounded-md text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-sm"
-                  >
-                    <Download size={14} />
-                    View File
-                  </a>
-                </div>
+                <div className="h-px bg-gray-200 flex-1"></div>
               </div>
-            </motion.div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {docs.map((doc, index) => (
+                  <motion.div
+                    key={doc.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm hover:shadow-xl transition-all border-l-4 border-l-post-red-primary flex gap-6 items-start group"
+                  >
+                    <div className="bg-post-yellow-light text-post-red-primary p-4 rounded-lg group-hover:scale-110 transition-transform">
+                      <FileText size={24} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-black text-sm text-gray-800 uppercase tracking-tight mb-2 truncate">
+                        {doc.fileName}
+                      </h3>
+                      <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mb-6 h-8 opacity-80">
+                        {doc.description || 'Official document archive entry for postal services.'}
+                      </p>
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                        <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">
+                          {doc.createdAt?.toDate().toLocaleDateString('en-GB') || 'LATEST'}
+                        </span>
+                        <a 
+                          href={doc.fileLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 bg-post-red-primary text-white px-5 py-2 rounded-md text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-sm"
+                        >
+                          <Download size={14} />
+                          View File
+                        </a>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       ) : (
