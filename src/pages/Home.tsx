@@ -36,10 +36,10 @@ export default function Home() {
         <HeroSlider />
       </div>
       
-      <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 pb-24">
+      <div className="max-w-7xl mx-auto p-3 md:p-8 space-y-6 md:space-y-8 pb-24">
         <NewsMarquee />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
           {categories.map((cat, index) => (
             <motion.div
               key={cat.name}
@@ -47,23 +47,24 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               onClick={() => navigate(cat.path)}
-              className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-8 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group flex flex-col items-center text-center relative overflow-hidden`}
+              className={`bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-4 md:p-8 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group flex flex-col items-center text-center relative overflow-hidden`}
             >
-              <div className={`absolute top-0 left-0 w-full h-1.5 ${cat.color}`} />
+              <div className={`absolute top-0 left-0 w-full h-1 md:h-1.5 ${cat.color}`} />
               
-              <div className={`w-20 h-20 ${cat.color.replace('bg-', 'bg-').replace('-600', '-50').replace('-500', '-50')} rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform shadow-inner`}>
-                <cat.icon size={36} className={cat.color.replace('bg-', 'text-')} />
+              <div className={`w-12 h-12 md:w-20 md:h-20 ${cat.color.replace('bg-', 'bg-').replace('-600', '-50').replace('-500', '-50')} rounded-lg md:rounded-2xl flex items-center justify-center mb-3 md:mb-6 group-hover:rotate-12 transition-transform shadow-inner`}>
+                <cat.icon size={20} className={`${cat.color.replace('bg-', 'text-')} md:hidden`} />
+                <cat.icon size={36} className={`${cat.color.replace('bg-', 'text-')} hidden md:block`} />
               </div>
               
-              <h3 className="text-xl font-black text-gray-800 mb-2 truncate w-full uppercase tracking-tighter">
+              <h3 className="text-[10px] md:text-xl font-black text-gray-800 mb-1 md:mb-2 truncate w-full uppercase tracking-tighter">
                 {cat.name}
               </h3>
               
-              <p className="text-[11px] text-gray-500 leading-relaxed mb-6 font-bold uppercase tracking-tight opacity-70">
+              <p className="hidden md:block text-[11px] text-gray-500 leading-relaxed mb-6 font-bold uppercase tracking-tight opacity-70">
                 {cat.name} Records & Updates
               </p>
 
-              <div className={`mt-auto px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest ${cat.color} text-white opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 shadow-lg`}>
+              <div className={`mt-auto px-4 md:px-6 py-1.5 md:py-2 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest ${cat.color} text-white opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 shadow-lg hidden md:block`}>
                 Explore Now
               </div>
             </motion.div>
@@ -72,11 +73,11 @@ export default function Home() {
       </div>
       
       {/* Info Bar / Marquee */}
-      <div className="max-w-7xl mx-auto p-4 md:p-8">
-        <div className="h-12 bg-white border border-gray-200 flex items-center justify-between px-6 rounded-lg shadow-sm overflow-hidden">
-          <div className="flex items-center gap-6 overflow-hidden w-full">
-            <span className="text-[10px] text-post-red-primary font-black uppercase tracking-[0.2em] whitespace-nowrap bg-white pr-4 z-10">Recent Circulars:</span>
-            <div className="flex animate-marquee whitespace-nowrap text-xs text-gray-600 font-bold uppercase tracking-tight">
+      <div className="max-w-7xl mx-auto p-3 md:p-8">
+        <div className="h-10 md:h-12 bg-white border border-gray-200 flex items-center justify-between px-3 md:px-6 rounded-lg shadow-sm overflow-hidden">
+          <div className="flex items-center gap-3 md:gap-6 overflow-hidden w-full">
+            <span className="text-[8px] md:text-[10px] text-post-red-primary font-black uppercase tracking-widest md:tracking-[0.2em] whitespace-nowrap bg-white pr-2 md:pr-4 z-10">Recent Circulars:</span>
+            <div className="flex animate-marquee whitespace-nowrap text-[9px] md:text-xs text-gray-600 font-bold uppercase tracking-tight">
               <span className="mr-8">• Important notice regarding POSB interest rates for Q2 FY2024-25</span>
               <span className="mr-8">• New Speed Post tracking enhancements launched</span>
               <span className="mr-8">• Digital PLI premium payment now available</span>

@@ -100,13 +100,13 @@ export default function HeroSlider() {
 
           {/* Content */}
           <div className="relative h-full max-w-7xl mx-auto w-full flex flex-col justify-center px-4 md:px-8">
-            <div className="max-w-3xl relative">
-              <div className="absolute -left-4 md:-left-8 top-0 bottom-0 w-2 bg-post-yellow" />
+            <div className="max-w-3xl relative px-4 md:px-0">
+              <div className="absolute -left-2 md:-left-8 top-0 bottom-0 w-1 md:w-2 bg-post-yellow" />
               <motion.span
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-post-yellow font-black text-xs md:text-sm uppercase tracking-[0.4em] mb-4 block"
+              className="text-post-yellow font-black text-[10px] md:text-sm uppercase tracking-[0.3em] md:tracking-[0.4em] mb-2 md:mb-4 block"
             >
               {slides[current].accent}
             </motion.span>
@@ -114,7 +114,7 @@ export default function HeroSlider() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-3xl md:text-7xl font-black text-white uppercase tracking-tighter leading-tight md:leading-none mb-6 drop-shadow-2xl"
+              className="text-2xl md:text-7xl font-black text-white uppercase tracking-tighter leading-tight md:leading-none mb-4 md:mb-6 drop-shadow-2xl"
             >
               {slides[current].title}
             </motion.h1>
@@ -122,7 +122,7 @@ export default function HeroSlider() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-base md:text-xl text-white/80 max-w-xl font-medium leading-relaxed mb-10"
+              className="text-sm md:text-xl text-white/80 max-w-xl font-medium leading-relaxed mb-6 md:mb-10"
             >
               {slides[current].subtitle}
             </motion.p>
@@ -131,7 +131,7 @@ export default function HeroSlider() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <button className="bg-post-yellow text-post-red-primary px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-xl shadow-black/40 active:scale-95">
+              <button className="bg-post-yellow text-post-red-primary px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl font-black uppercase tracking-widest text-[10px] md:text-xs hover:scale-105 transition-all shadow-xl shadow-black/40 active:scale-95">
                 Explore Services
               </button>
             </motion.div>

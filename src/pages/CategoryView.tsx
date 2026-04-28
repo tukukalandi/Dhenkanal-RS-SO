@@ -84,27 +84,27 @@ export default function CategoryView() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
-      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-100 pb-8">
+    <div className="max-w-6xl mx-auto px-3 md:px-6 py-6 md:py-12">
+      <div className="mb-6 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 border-b border-gray-100 pb-6 md:pb-8">
         <div>
-          <Link to="/" className="flex items-center gap-2 text-post-red-primary hover:text-post-red-dark font-bold mb-6 transition-all group uppercase text-[10px] tracking-widest">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <Link to="/" className="flex items-center gap-2 text-post-red-primary hover:text-post-red-dark font-bold mb-4 md:mb-6 transition-all group uppercase text-[9px] md:text-[10px] tracking-widest">
+            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
             Back to Dashboard
           </Link>
-          <h2 className="text-4xl font-black text-post-red-primary uppercase tracking-tighter leading-none">
+          <h2 className="text-2xl md:text-4xl font-black text-post-red-primary uppercase tracking-tighter leading-none">
             {displayCategory}
           </h2>
-          <p className="text-gray-400 mt-3 font-bold uppercase tracking-widest text-[10px]">Portal Archive / {displayCategory}</p>
+          <p className="text-gray-400 mt-2 md:mt-3 font-bold uppercase tracking-widest text-[8px] md:text-[10px]">Portal Archive / {displayCategory}</p>
         </div>
 
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
           <input 
             type="text" 
             placeholder="Search records..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-12 pl-12 pr-4 bg-white border border-gray-200 rounded-lg outline-none focus:border-post-red-primary shadow-sm transition-all font-medium text-sm"
+            className="w-full h-10 md:h-12 pl-12 pr-4 bg-white border border-gray-200 rounded-lg outline-none focus:border-post-red-primary shadow-sm transition-all font-medium text-xs md:text-sm"
           />
         </div>
       </div>
@@ -117,47 +117,47 @@ export default function CategoryView() {
       ) : Object.keys(filteredGroups).length > 0 ? (
         <div className="space-y-12">
           {Object.entries(filteredGroups).map(([subCategory, docs]) => (
-            <div key={subCategory} className="bg-white/40 rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm space-y-8">
-              <div className="flex items-center gap-4">
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-post-red-primary bg-post-yellow-light px-6 py-2 rounded-lg border border-post-yellow flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-post-red-primary animate-pulse" />
+            <div key={subCategory} className="bg-white/40 rounded-xl md:rounded-2xl p-4 md:p-8 border border-gray-100 shadow-sm space-y-4 md:space-y-8">
+              <div className="flex items-center gap-3 md:gap-4">
+                <h3 className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-post-red-primary bg-post-yellow-light px-4 md:px-6 py-1.5 md:py-2 rounded-lg border border-post-yellow flex items-center gap-2 md:gap-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-post-red-primary animate-pulse" />
                   {subCategory}
                 </h3>
                 <div className="h-px bg-gray-200 flex-1"></div>
-                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{docs.length} Items</span>
+                <span className="text-[8px] md:text-[10px] font-black text-gray-300 uppercase tracking-widest">{docs.length} Items</span>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 {docs.map((doc, index) => (
                   <motion.div
                     key={doc.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="bg-white p-6 rounded-xl border border-gray-100 shadow-md hover:shadow-xl transition-all border-l-4 border-l-post-red-primary flex gap-6 items-start group"
+                    className="bg-white p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-100 shadow-md hover:shadow-xl transition-all border-l-4 border-l-post-red-primary flex gap-4 md:gap-6 items-start group"
                   >
-                    <div className="bg-post-yellow-light text-post-red-primary p-4 rounded-lg group-hover:scale-110 transition-transform">
-                      <FileText size={24} />
+                    <div className="bg-post-yellow-light text-post-red-primary p-3 md:p-4 rounded-lg group-hover:scale-110 transition-transform flex-shrink-0">
+                      <FileText size={20} className="md:w-6 md:h-6" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-black text-sm text-gray-800 uppercase tracking-tight mb-2 truncate">
+                      <h3 className="font-black text-[11px] md:text-sm text-gray-800 uppercase tracking-tight mb-1 md:mb-2 truncate">
                         {doc.fileName}
                       </h3>
-                      <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mb-6 h-8 opacity-80">
+                      <p className="text-[10px] md:text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mb-4 md:mb-6 h-6 md:h-8 opacity-80">
                         {doc.description || 'Official document archive entry for postal services.'}
                       </p>
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-                        <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">
+                      <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-gray-50">
+                        <span className="text-[8px] md:text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">
                           {doc.createdAt?.toDate().toLocaleDateString('en-GB') || 'LATEST'}
                         </span>
                         <a 
                           href={doc.fileLink} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 bg-post-red-primary text-white px-5 py-2 rounded-md text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-sm"
+                          className="flex items-center gap-1.5 md:gap-2 bg-post-red-primary text-white px-3 md:px-5 py-1.5 md:py-2 rounded-md text-[8px] md:text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-sm"
                         >
-                          <Download size={14} />
-                          View File
+                          <Download size={12} className="md:w-3.5 md:h-3.5" />
+                          View
                         </a>
                       </div>
                     </div>
@@ -178,12 +178,12 @@ export default function CategoryView() {
       )}
 
       {/* Notice Section */}
-      <div className="mt-16 bg-post-yellow-light border border-post-yellow p-8 rounded-lg">
-        <h4 className="font-black text-post-red-primary mb-6 flex items-center gap-2 uppercase tracking-widest text-xs">
-          <Info size={16} />
+      <div className="mt-10 md:mt-16 bg-post-yellow-light border border-post-yellow p-6 md:p-8 rounded-lg">
+        <h4 className="font-black text-post-red-primary mb-4 md:mb-6 flex items-center gap-2 uppercase tracking-widest text-[10px] md:text-xs">
+          <Info size={14} className="md:w-4 md:h-4" />
           Portal Compliance
         </h4>
-        <ul className="space-y-4 text-[10px] font-bold uppercase tracking-widest text-gray-600 leading-relaxed">
+        <ul className="space-y-3 md:space-y-4 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gray-600 leading-relaxed">
           <li className="flex gap-4">
             <span className="text-post-red-primary">•</span>
             <span>All forms must be printed in A4 format unless specified otherwise.</span>

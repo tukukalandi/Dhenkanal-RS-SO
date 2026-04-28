@@ -54,8 +54,8 @@ export default function Header() {
             <h1 className="text-sm md:text-3xl font-black text-post-red-primary tracking-tighter leading-none uppercase">
               Dhenkanal RS SO
             </h1>
-            <span className="text-[8px] md:text-xs text-gray-400 font-bold tracking-widest md:tracking-[0.2em] mt-0.5 md:mt-1 uppercase">
-              Postal Division | Odisha
+            <span className="text-[8px] md:text-[10px] text-gray-400 font-bold tracking-widest md:tracking-[0.15em] mt-0.5 md:mt-1 uppercase">
+              Dhenkanal Postal Division | Odisha
             </span>
           </div>
         </div>
