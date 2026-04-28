@@ -56,6 +56,17 @@ export default function CategoryView() {
     return acc;
   }, {} as { [key: string]: Document[] });
 
+  const cardThemes = [
+    { bg: 'bg-[#e53e3e]', iconBg: 'bg-white', iconColor: 'text-[#e53e3e]', btnBg: 'bg-white', btnText: 'text-[#e53e3e]' }, // Red
+    { bg: 'bg-[#319795]', iconBg: 'bg-white', iconColor: 'text-[#319795]', btnBg: 'bg-white', btnText: 'text-[#319795]' }, // Teal
+    { bg: 'bg-[#805ad5]', iconBg: 'bg-white', iconColor: 'text-[#805ad5]', btnBg: 'bg-white', btnText: 'text-[#805ad5]' }, // Purple
+    { bg: 'bg-[#3182ce]', iconBg: 'bg-white', iconColor: 'text-[#3182ce]', btnBg: 'bg-white', btnText: 'text-[#3182ce]' }, // Blue
+    { bg: 'bg-[#dd6b20]', iconBg: 'bg-white', iconColor: 'text-[#dd6b20]', btnBg: 'bg-white', btnText: 'text-[#dd6b20]' }, // Orange
+    { bg: 'bg-[#2c7a7b]', iconBg: 'bg-white', iconColor: 'text-[#2c7a7b]', btnBg: 'bg-white', btnText: 'text-[#2c7a7b]' }, // Dark Teal
+    { bg: 'bg-[#d69e2e]', iconBg: 'bg-white', iconColor: 'text-[#d69e2e]', btnBg: 'bg-white', btnText: 'text-[#d69e2e]' }, // Yellow
+    { bg: 'bg-[#c53030]', iconBg: 'bg-white', iconColor: 'text-[#c53030]', btnBg: 'bg-white', btnText: 'text-[#c53030]' }, // Dark Red
+  ];
+
   useEffect(() => {
     async function fetchDocs() {
       setLoading(true);
@@ -127,42 +138,60 @@ export default function CategoryView() {
                 <span className="text-[8px] md:text-[10px] font-black text-gray-300 uppercase tracking-widest">{docs.length} Items</span>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                {docs.map((doc, index) => (
-                  <motion.div
-                    key={doc.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="bg-white p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-100 shadow-md hover:shadow-xl transition-all border-l-4 border-l-post-red-primary flex gap-4 md:gap-6 items-start group"
-                  >
-                    <div className="bg-post-yellow-light text-post-red-primary p-3 md:p-4 rounded-lg group-hover:scale-110 transition-transform flex-shrink-0">
-                      <FileText size={20} className="md:w-6 md:h-6" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-black text-[11px] md:text-sm text-gray-800 uppercase tracking-tight mb-1 md:mb-2 truncate">
-                        {doc.fileName}
-                      </h3>
-                      <p className="text-[10px] md:text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mb-4 md:mb-6 h-6 md:h-8 opacity-80">
-                        {doc.description || 'Official document archive entry for postal services.'}
-                      </p>
-                      <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-gray-50">
-                        <span className="text-[8px] md:text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">
-                          {doc.createdAt?.toDate().toLocaleDateString('en-GB') || 'LATEST'}
-                        </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                {docs.map((doc, index) => {
+                  const theme = cardThemes[index % cardThemes.length];
+                  return (
+                    <motion.div
+                      key={doc.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className={`${theme.bg} p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all flex flex-col gap-4 items-start group relative overflow-hidden h-full`}
+                    >
+                      {/* Subtle pattern overlay */}
+                      <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 skew-x-[-20deg] translate-x-8 group-hover:translate-x-4 transition-transform pointer-events-none" />
+
+                      <div className="flex items-start gap-4 w-full z-10">
+                        <div className={`${theme.iconBg} ${theme.iconColor} p-3 rounded-full shadow-inner flex-shrink-0`}>
+                          <FileText size={20} className="md:w-6 md:h-6" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-black text-xs md:text-sm text-white uppercase tracking-tight mb-1 truncate">
+                            {doc.fileName}
+                          </h3>
+                          <p className="text-[10px] md:text-xs text-white/70 font-bold uppercase tracking-tight mb-4 line-clamp-1">
+                            {doc.subCategory || 'Official Record'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="w-full z-10 mb-4">
+                        <p className="text-[10px] md:text-xs text-white/80 font-medium leading-relaxed line-clamp-2 h-8 md:h-10 opacity-90">
+                          {doc.description || 'Official document archive entry for postal services and operational records.'}
+                        </p>
+                      </div>
+
+                      <div className="mt-auto w-full flex items-center justify-between pt-4 border-t border-white/10 z-10">
+                        <div className="flex flex-col">
+                          <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">UPLOADED</span>
+                          <span className="text-[9px] font-black text-white uppercase tracking-wider">
+                            {doc.createdAt?.toDate().toLocaleDateString('en-GB') || 'LATEST'}
+                          </span>
+                        </div>
                         <a 
                           href={doc.fileLink} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 md:gap-2 bg-post-red-primary text-white px-3 md:px-5 py-1.5 md:py-2 rounded-md text-[8px] md:text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-sm"
+                          className={`${theme.btnBg} ${theme.btnText} px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-2`}
                         >
-                          <Download size={12} className="md:w-3.5 md:h-3.5" />
+                          <Download size={12} strokeWidth={3} />
                           View
                         </a>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           ))}
