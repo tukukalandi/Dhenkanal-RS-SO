@@ -3,12 +3,15 @@ import { Menu, Globe, ChevronDown, Clock, Search, X, UserCircle } from 'lucide-r
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import ServiceModal from './ServiceModal';
 
 export default function Header() {
   const { login } = useAuth();
   const [date, setDate] = useState(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOthersOpen, setIsOthersOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [activeServiceModal, setActiveServiceModal] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => setDate(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })), 60000);
@@ -18,7 +21,17 @@ export default function Header() {
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'Helpdesk', path: '/helpdesk' },
-    { name: 'Admin Portal', path: '/admin' },
+  ];
+
+  const serviceItems = [
+    'Gangajal Order',
+    'Aadhaar Updation / Enrollment',
+    'Passport Services',
+    'Booking of Articles',
+    'Track Your Articles',
+    'Account Opening',
+    'PLI / RPLI Services',
+    'Any Other Help'
   ];
 
   return (
@@ -86,10 +99,10 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Bar 3: Navigation - Scrollable on mobile */}
-      <nav className="flex h-10 md:h-12 bg-post-red-primary text-white items-center px-2 md:px-6 relative z-40 shadow-lg overflow-x-auto no-scrollbar scroll-smooth">
-        <div className="flex items-stretch h-full min-w-max">
-          {menuItems.slice(0, 2).map((item) => (
+      {/* Bar 3: Navigation */}
+      <nav className="flex min-h-10 md:min-h-12 bg-post-red-primary text-white items-center px-2 md:px-6 relative z-40 shadow-lg">
+        <div className="flex flex-wrap items-stretch h-full w-full">
+          {menuItems.map((item) => (
             <Link 
               key={item.path}
               to={item.path} 
@@ -98,10 +111,50 @@ export default function Header() {
               {item.name}
             </Link>
           ))}
+
+          <div className="relative group flex items-center">
+            <button 
+              onClick={() => {
+                setIsServicesOpen(!isServicesOpen);
+                setIsOthersOpen(false);
+              }}
+              className={`flex items-center px-4 md:px-6 h-full text-white font-bold text-[10px] md:text-xs transition-all uppercase tracking-wider gap-2 whitespace-nowrap ${isServicesOpen ? 'bg-post-red-dark' : 'hover:bg-post-red-dark'}`}
+            >
+              Our Services
+              <ChevronDown size={12} className={isServicesOpen ? 'rotate-180 transition-transform' : 'transition-transform'} />
+            </button>
+            
+            <AnimatePresence>
+              {isServicesOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute top-full left-0 w-64 bg-white shadow-2xl rounded-b-md border border-gray-100 z-50 overflow-hidden"
+                >
+                  {serviceItems.map((serviceName) => (
+                    <button 
+                      key={serviceName} 
+                      onClick={() => {
+                        setActiveServiceModal(serviceName);
+                        setIsServicesOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-[11px] font-bold text-gray-700 hover:bg-post-yellow-light border-b border-gray-50 last:border-0 transition-colors uppercase tracking-wide"
+                    >
+                      {serviceName}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           
           <div className="relative group flex items-center">
             <button 
-              onClick={() => setIsOthersOpen(!isOthersOpen)}
+              onClick={() => {
+                setIsOthersOpen(!isOthersOpen);
+                setIsServicesOpen(false);
+              }}
               className={`flex items-center px-4 md:px-6 h-full text-white font-bold text-[10px] md:text-xs transition-all uppercase tracking-wider gap-2 whitespace-nowrap ${isOthersOpen ? 'bg-post-red-dark' : 'hover:bg-post-red-dark'}`}
             >
               Others
@@ -189,6 +242,23 @@ export default function Header() {
                 </div>
 
                 <div className="mt-8">
+                  <h3 className="text-[10px] font-black text-post-red-primary uppercase tracking-[0.2em] mb-4 px-4">Our Services</h3>
+                  {serviceItems.map((serviceName) => (
+                    <button 
+                       key={serviceName} 
+                       onClick={() => {
+                         setActiveServiceModal(serviceName);
+                         setIsMenuOpen(false);
+                       }}
+                       className="w-full flex items-center justify-between py-3 px-4 rounded-xl hover:bg-post-yellow-light text-gray-800 font-bold border-b border-gray-50 last:border-0 transition-all group text-left"
+                    >
+                       <span className="text-[11px] uppercase tracking-wide group-hover:text-post-red-primary">{serviceName}</span>
+                       <ChevronDown size={14} className="-rotate-90 text-gray-300 group-hover:text-post-red-primary" />
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-8">
                   <h3 className="text-[10px] font-black text-post-red-primary uppercase tracking-[0.2em] mb-4 px-4">Important Links</h3>
                   {[
                     { name: 'India Post Website', url: 'https://www.indiapost.gov.in/' },
@@ -224,6 +294,12 @@ export default function Header() {
           </>
         )}
       </AnimatePresence>
+      
+      <ServiceModal 
+        isOpen={!!activeServiceModal} 
+        onClose={() => setActiveServiceModal(null)} 
+        serviceType={activeServiceModal} 
+      />
     </header>
   );
 }

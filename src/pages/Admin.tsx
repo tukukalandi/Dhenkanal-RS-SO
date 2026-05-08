@@ -96,7 +96,10 @@ interface Document {
 
 export default function Admin() {
   const { user, login, logout, accessToken } = useAuth();
-  const [activeTab, setActiveTab] = useState<'upload' | 'manage' | 'news'>('manage');
+  const [activeTab, setActiveTab] = useState<'upload' | 'manage' | 'news' | 'services'>('manage');
+  const [activeServiceTab, setActiveServiceTab] = useState('gangajal_orders');
+  const [servicesData, setServicesData] = useState<any[]>([]);
+  const [loadingServices, setLoadingServices] = useState(false);
   const [formData, setFormData] = useState({
     product: PRODUCT_CATEGORIES[0],
     subCategory: '',
@@ -120,10 +123,23 @@ export default function Admin() {
   useEffect(() => {
     if (user && activeTab === 'manage') {
       fetchDocuments();
-    } else if (user && activeTab === 'news') {
-      fetchNews();
+    } else if (user && activeTab === 'services') {
+      fetchServiceRequests();
     }
-  }, [user, activeTab]);
+  }, [user, activeTab, activeServiceTab]);
+
+  const fetchServiceRequests = async () => {
+    setLoadingServices(true);
+    try {
+      const q = query(collection(db, activeServiceTab), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      setServicesData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error('Error fetching service requests:', error);
+    } finally {
+      setLoadingServices(false);
+    }
+  };
 
   const fetchNews = async () => {
     setLoadingNews(true);
@@ -165,6 +181,20 @@ export default function Admin() {
       setStatus({ type: 'success', message: 'News item deleted successfully.' });
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, `news/${id}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteService = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this request record?')) return;
+    setIsSubmitting(true);
+    try {
+      await deleteDoc(doc(db, activeServiceTab, id));
+      setServicesData(prev => prev.filter(req => req.id !== id));
+      setStatus({ type: 'success', message: 'Record deleted successfully.' });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `${activeServiceTab}/${id}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -369,6 +399,13 @@ export default function Admin() {
           >
             <FileText size={14} />
             Latest News
+          </button>
+          <button 
+            onClick={() => setActiveTab('services')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${activeTab === 'services' ? 'bg-white text-post-red-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            <FileText size={14} />
+            Our Services
           </button>
         </div>
       </div>
@@ -670,6 +707,94 @@ export default function Admin() {
             ) : (
               <p className="text-sm text-gray-500 italic">No news items currently active.</p>
             )}
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === 'services' && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white rounded-lg shadow-xl border border-gray-100 p-8 border-t-8 border-post-red-primary mb-8"
+        >
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-64 shrink-0 flex flex-col gap-2">
+              {[
+                { id: 'gangajal_orders', name: 'Gangajal Orders' },
+                { id: 'aadhaar_bookings', name: 'Aadhaar Bookings' },
+                { id: 'passport_requests', name: 'Passport Services' },
+                { id: 'booking_requests', name: 'Booking of Articles' },
+                { id: 'tracking_requests', name: 'Track Articles' },
+                { id: 'account_requests', name: 'Account Opening' },
+                { id: 'pli_requests', name: 'PLI / RPLI' },
+                { id: 'other_requests', name: 'Other Help' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveServiceTab(tab.id)}
+                  className={`text-left px-4 py-3 rounded-lg font-bold text-xs uppercase tracking-wide transition-all ${
+                    activeServiceTab === tab.id 
+                    ? 'bg-post-red-primary text-white shadow-md' 
+                    : 'text-gray-500 hover:bg-red-50 hover:text-post-red-primary'
+                  }`}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </div>
+            
+            <div className="flex-1 overflow-x-auto">
+              {loadingServices ? (
+                <div className="flex justify-center p-8">
+                  <Loader2 className="animate-spin text-post-red-primary" />
+                </div>
+              ) : servicesData.length > 0 ? (
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr className="bg-gray-50 border-y border-gray-200">
+                      <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                      <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Name & Contact</th>
+                      <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Details</th>
+                      <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {servicesData.map(req => (
+                      <tr key={req.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="py-4 px-4 text-xs text-gray-500">
+                          {req.createdAt?.toDate().toLocaleString('en-GB') || 'N/A'}
+                        </td>
+                        <td className="py-4 px-4">
+                          <p className="text-sm font-bold text-gray-800">{req.name}</p>
+                          <p className="text-xs text-gray-500">{req.mobile}</p>
+                          <p className="text-[10px] text-gray-400 mt-1 line-clamp-1">{req.address}</p>
+                        </td>
+                        <td className="py-4 px-4 text-sm text-gray-700">
+                          {req.quantity && <p><span className="font-bold">Qty:</span> {req.quantity}</p>}
+                          {req.office_name && <p><span className="font-bold">Office:</span> {req.office_name}</p>}
+                          {req.booking_date && <p><span className="font-bold">Date:</span> {req.booking_date}</p>}
+                          {req.message && <p className="italic text-xs line-clamp-2">"{req.message}"</p>}
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <button 
+                            onClick={() => handleDeleteService(req.id)}
+                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                            title="Delete Request"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="text-center py-12 bg-gray-50 rounded-xl border border-gray-100">
+                  <FileText className="mx-auto h-8 w-8 text-gray-300 mb-3" />
+                  <p className="text-gray-500 font-medium text-sm">No requests found for this service.</p>
+                </div>
+              )}
+            </div>
           </div>
         </motion.div>
       )}

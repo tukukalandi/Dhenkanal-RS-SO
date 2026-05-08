@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Megaphone } from 'lucide-react';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { handleFirestoreError, OperationType } from '../lib/errorHandler';
 
 interface NewsItem {
   id: string;
@@ -30,7 +31,7 @@ export default function NewsMarquee() {
       }));
       setNewsItems(news);
     }, (error) => {
-      console.error(error);
+      handleFirestoreError(error, OperationType.GET, 'news');
     });
 
     return () => unsubscribe();

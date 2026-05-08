@@ -65,5 +65,38 @@ service cloud.firestore {
       allow delete: if isAdmin();
       allow update: if false;
     }
+    // Our Services Requests
+    match /gangajal_orders/{reqId} {
+      allow create: if true;
+      allow read, delete, update: if isAdmin();
+    }
+    match /aadhaar_bookings/{reqId} {
+      allow create: if true;
+      allow read, delete, update: if isAdmin();
+    }
+    match /passport_requests/{reqId} {
+      allow create: if true;
+      allow read, delete, update: if isAdmin();
+    }
+    match /booking_requests/{reqId} {
+      allow create: if true;
+      allow read, delete, update: if isAdmin();
+    }
+    match /tracking_requests/{reqId} {
+      allow create: if true;
+      allow read, delete, update: if isAdmin();
+    }
+    match /account_requests/{reqId} {
+      allow create: if true;
+      allow read, delete, update: if isAdmin();
+    }
+    match /pli_requests/{reqId} {
+      allow create: if true;
+      allow read, delete, update: if isAdmin();
+    }
+    match /other_requests/{reqId} {
+      allow create: if true;
+      allow read, delete, update: if isAdmin();
+    }
   }
 }
