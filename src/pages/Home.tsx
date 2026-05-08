@@ -10,6 +10,7 @@ import {
   Globe2, 
   Package, 
   Briefcase,
+  Stamp,
   Scale,
   FileSearch,
   MoreHorizontal
@@ -22,6 +23,7 @@ const categories = [
   { name: 'International Mails', icon: Globe2, color: 'bg-blue-600', path: '/category/International-Mails' },
   { name: 'Parcels', icon: Package, color: 'bg-amber-600', path: '/category/Parcels' },
   { name: 'BD/CCS', icon: Briefcase, color: 'bg-rose-600', path: '/category/BD-CCS' },
+  { name: 'Philately', icon: Stamp, color: 'bg-pink-600', path: '/category/Philately' },
   { name: 'PO Orders/Rules', icon: Scale, color: 'bg-violet-600', path: '/category/PO-Orders-Rules' },
   { name: 'Official Documents', icon: FileSearch, color: 'bg-cyan-600', path: '/category/Official-Documents' },
   { name: 'Others', icon: MoreHorizontal, color: 'bg-slate-600', path: '/category/Others' },
@@ -31,12 +33,12 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <main className="w-full bg-[#f8f9fa]">
+    <main className="w-full bg-[#f8f9fa] pb-24">
       <div className="w-full">
         <HeroSlider />
       </div>
-      
-      <div className="max-w-7xl mx-auto p-3 md:p-8 space-y-6 md:space-y-8 pb-24">
+
+      <div className="max-w-7xl mx-auto p-3 md:p-8 space-y-6 md:space-y-8">
         <NewsMarquee />
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
@@ -69,29 +71,6 @@ export default function Home() {
               </div>
             </motion.div>
           ))}
-        </div>
-      </div>
-      
-      {/* Info Bar / Marquee */}
-      <div className="max-w-7xl mx-auto p-3 md:p-8">
-        <div className="h-10 md:h-12 bg-white border border-gray-200 flex items-center justify-between px-3 md:px-6 rounded-lg shadow-sm overflow-hidden">
-          <div className="flex items-center gap-3 md:gap-6 overflow-hidden w-full">
-            <span className="text-[8px] md:text-[10px] text-post-red-primary font-black uppercase tracking-widest md:tracking-[0.2em] whitespace-nowrap bg-white pr-2 md:pr-4 z-10">Recent Circulars:</span>
-            <div className="flex animate-marquee whitespace-nowrap text-[9px] md:text-xs text-gray-600 font-bold uppercase tracking-tight">
-              <span className="mr-8">• Important notice regarding POSB interest rates for Q2 FY2024-25</span>
-              <span className="mr-8">• New Speed Post tracking enhancements launched</span>
-              <span className="mr-8">• Digital PLI premium payment now available</span>
-              <span className="mr-8">• Tracking of international parcels improved</span>
-              <span className="mr-8">• Important notice regarding POSB interest rates for Q2 FY2024-25</span>
-              <span className="mr-8">• New Speed Post tracking enhancements launched</span>
-              <span className="mr-8">• Digital PLI premium payment now available</span>
-              <span className="mr-8">• Tracking of international parcels improved</span>
-            </div>
-          </div>
-          <div className="hidden lg:flex text-[10px] text-gray-400 items-center gap-2 font-bold uppercase tracking-widest pl-4 bg-white z-10">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            Operational
-          </div>
         </div>
       </div>
     </main>

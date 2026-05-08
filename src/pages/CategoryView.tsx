@@ -147,35 +147,35 @@ export default function CategoryView() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`${theme.bg} p-4 md:p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all flex flex-col gap-4 items-start group relative overflow-hidden h-full`}
+                      className={`${theme.bg} p-3 md:p-4 rounded-xl shadow-lg hover:shadow-2xl transition-all flex flex-col gap-3 items-start group relative overflow-hidden h-full`}
                     >
                       {/* Subtle pattern overlay */}
                       <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 skew-x-[-20deg] translate-x-8 group-hover:translate-x-4 transition-transform pointer-events-none" />
 
-                      <div className="flex items-start gap-4 w-full z-10">
-                        <div className={`${theme.iconBg} ${theme.iconColor} p-3 rounded-full shadow-inner flex-shrink-0`}>
-                          <FileText size={20} className="md:w-6 md:h-6" />
+                      <div className="flex items-start gap-3 w-full z-10">
+                        <div className={`${theme.iconBg} ${theme.iconColor} p-2 rounded-full shadow-inner flex-shrink-0`}>
+                          <FileText size={16} className="md:w-5 md:h-5" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-black text-xs md:text-sm text-white uppercase tracking-tight mb-1 truncate">
+                          <h3 className="font-black text-xs md:text-sm text-white uppercase tracking-tight mb-0.5 truncate">
                             {doc.fileName}
                           </h3>
-                          <p className="text-[10px] md:text-xs text-white/70 font-bold uppercase tracking-tight mb-4 line-clamp-1">
+                          <p className="text-[9px] md:text-[10px] text-white/70 font-bold uppercase tracking-tight mb-2 line-clamp-1">
                             {doc.subCategory || 'Official Record'}
                           </p>
                         </div>
                       </div>
 
-                      <div className="w-full z-10 mb-4">
-                        <p className="text-[10px] md:text-xs text-white/80 font-medium leading-relaxed line-clamp-2 h-8 md:h-10 opacity-90">
+                      <div className="w-full z-10 mb-2">
+                        <p className="text-[9px] md:text-[10px] text-white/80 font-medium leading-relaxed line-clamp-2 h-7 md:h-8 opacity-90">
                           {doc.description || 'Official document archive entry for postal services and operational records.'}
                         </p>
                       </div>
 
-                      <div className="mt-auto w-full flex items-center justify-between pt-4 border-t border-white/10 z-10">
+                      <div className="mt-auto w-full flex items-center justify-between pt-3 border-t border-white/10 z-10">
                         <div className="flex flex-col">
-                          <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">UPLOADED</span>
-                          <span className="text-[9px] font-black text-white uppercase tracking-wider">
+                          <span className="text-[7px] font-black text-white/40 uppercase tracking-widest">UPLOADED</span>
+                          <span className="text-[8px] font-black text-white uppercase tracking-wider">
                             {doc.createdAt?.toDate().toLocaleDateString('en-GB') || 'LATEST'}
                           </span>
                         </div>
@@ -183,9 +183,9 @@ export default function CategoryView() {
                           href={doc.fileLink} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className={`${theme.btnBg} ${theme.btnText} px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-2`}
+                          className={`${theme.btnBg} ${theme.btnText} px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-1.5`}
                         >
-                          <Download size={12} strokeWidth={3} />
+                          <Download size={10} strokeWidth={3} />
                           View
                         </a>
                       </div>

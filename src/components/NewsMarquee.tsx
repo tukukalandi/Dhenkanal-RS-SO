@@ -1,31 +1,59 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Megaphone } from 'lucide-react';
+import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
-const NEWS_ITEMS = [
-  'Mahila Samman Savings Certificate, 2023 is now available at all Post Offices.',
-  'Sukanya Samriddhi Account: High interest rate of 8.2% per annum.',
-  'Special recruitment drive for GDS in various circles - Check official notifications.',
-  'Linking of Aadhaar with POST Office Savings Account is mandatory.',
-  'Avail 40% discount on Speed Post for Bulk Customers.'
+interface NewsItem {
+  id: string;
+  content: string;
+}
+
+const FALLBACK_NEWS = [
+  'Welcome to Dhenkanal Postal Division RS SO Portal.',
+  'Please log in to internal portal for official documents.',
 ];
 
 export default function NewsMarquee() {
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+
+  useEffect(() => {
+    const q = query(
+      collection(db, 'news'),
+      orderBy('createdAt', 'desc'),
+      limit(10)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const news = snapshot.docs.map(doc => ({
+        id: doc.id,
+        content: doc.data().content
+      }));
+      setNewsItems(news);
+    }, (error) => {
+      console.error(error);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const displayNews = newsItems.length > 0 ? newsItems.map(n => n.content) : FALLBACK_NEWS;
+
   return (
     <div className="bg-post-yellow-light border-y border-post-yellow/30 h-10 flex items-center overflow-hidden mb-8 rounded-lg">
-      <div className="bg-post-red-primary text-white h-full px-4 flex items-center gap-2 z-10 shadow-lg">
+      <div className="bg-post-red-primary text-white h-full px-4 flex items-center gap-2 z-10 shadow-lg relative rounded-r-xl">
         <Megaphone size={14} className="animate-bounce" />
-        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Latest News</span>
+        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap hidden sm:inline-block">Latest News</span>
       </div>
       
       <div className="flex-1 overflow-hidden relative group">
         <div className="flex whitespace-nowrap animate-marquee group-hover:pause-marquee py-2">
-          {NEWS_ITEMS.map((item, idx) => (
+          {displayNews.map((item, idx) => (
             <span key={idx} className="mx-8 text-[11px] font-bold text-post-red-dark uppercase tracking-wide">
               • {item}
             </span>
           ))}
           {/* Duplicate for seamless loop */}
-          {NEWS_ITEMS.map((item, idx) => (
+          {displayNews.map((item, idx) => (
             <span key={`dup-${idx}`} className="mx-8 text-[11px] font-bold text-post-red-dark uppercase tracking-wide">
               • {item}
             </span>

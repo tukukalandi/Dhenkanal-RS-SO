@@ -76,6 +76,7 @@ const PRODUCT_CATEGORIES = [
   'International Mails',
   'Parcels',
   'BD/CCS',
+  'Philately',
   'PO Orders/Rules',
   'Official Documents',
   'Others'
@@ -95,7 +96,7 @@ interface Document {
 
 export default function Admin() {
   const { user, login, logout, accessToken } = useAuth();
-  const [activeTab, setActiveTab] = useState<'upload' | 'manage'>('manage');
+  const [activeTab, setActiveTab] = useState<'upload' | 'manage' | 'news'>('manage');
   const [formData, setFormData] = useState({
     product: PRODUCT_CATEGORIES[0],
     subCategory: '',
@@ -103,6 +104,9 @@ export default function Admin() {
     description: '',
     fileLink: '',
   });
+  const [newsContent, setNewsContent] = useState('');
+  const [newsItems, setNewsItems] = useState<{id: string, content: string}[]>([]);
+  const [loadingNews, setLoadingNews] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -116,8 +120,23 @@ export default function Admin() {
   useEffect(() => {
     if (user && activeTab === 'manage') {
       fetchDocuments();
+    } else if (user && activeTab === 'news') {
+      fetchNews();
     }
   }, [user, activeTab]);
+
+  const fetchNews = async () => {
+    setLoadingNews(true);
+    try {
+      const q = query(collection(db, 'news'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      setNewsItems(snapshot.docs.map(doc => ({ id: doc.id, content: doc.data().content })));
+    } catch (error) {
+      console.error('Error fetching news:', error);
+    } finally {
+      setLoadingNews(false);
+    }
+  };
 
   const fetchDocuments = async () => {
     setLoadingDocs(true);
@@ -134,6 +153,42 @@ export default function Admin() {
       console.error('Error fetching documents:', error);
     } finally {
       setLoadingDocs(false);
+    }
+  };
+
+  const handleDeleteNews = async (id: string, content: string) => {
+    if (!window.confirm(`Are you sure you want to delete this news item?\n"${content}"`)) return;
+    setIsSubmitting(true);
+    try {
+      await deleteDoc(doc(db, 'news', id));
+      setNewsItems(prev => prev.filter(n => n.id !== id));
+      setStatus({ type: 'success', message: 'News item deleted successfully.' });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `news/${id}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNewsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsContent.trim() || isSubmitting || !user) return;
+    
+    setIsSubmitting(true);
+    setStatus(null);
+    try {
+      await addDoc(collection(db, 'news'), {
+        content: newsContent.trim(),
+        createdAt: serverTimestamp(),
+        createdBy: user.uid
+      });
+      setStatus({ type: 'success', message: 'News added successfully!' });
+      setNewsContent('');
+      fetchNews();
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'news');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -296,17 +351,24 @@ export default function Admin() {
         <div className="flex bg-gray-200/50 p-1 rounded-xl">
           <button 
             onClick={() => setActiveTab('manage')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${activeTab === 'manage' ? 'bg-white text-post-red-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${activeTab === 'manage' ? 'bg-white text-post-red-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
             <Settings size={14} />
             Manage
           </button>
           <button 
             onClick={() => setActiveTab('upload')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${activeTab === 'upload' ? 'bg-white text-post-red-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${activeTab === 'upload' ? 'bg-white text-post-red-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
             <Plus size={14} />
             Upload
+          </button>
+          <button 
+            onClick={() => setActiveTab('news')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${activeTab === 'news' ? 'bg-white text-post-red-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            <FileText size={14} />
+            Latest News
           </button>
         </div>
       </div>
@@ -335,7 +397,7 @@ export default function Admin() {
         </motion.div>
       )}
 
-      {activeTab === 'upload' ? (
+      {activeTab === 'upload' && (
         <motion.div 
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -389,30 +451,76 @@ export default function Admin() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${!formData.fileLink ? 'border-post-red-primary bg-red-50/10' : 'border-gray-50'}`} onClick={() => setFormData({ ...formData, fileLink: '' })}>
-                <div className="flex items-center gap-3 mb-3">
-                  <Upload size={18} className="text-post-red-primary" />
-                  <span className="font-black text-[10px] uppercase tracking-widest">DRIVE UPLOAD</span>
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest">Document Source</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div 
+                  onClick={() => setFormData({ ...formData, fileLink: '' })}
+                  className={`relative p-6 rounded-xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center text-center gap-3 ${
+                    !formData.fileLink 
+                      ? 'border-indigo-500 bg-indigo-50/50 shadow-inner hover:bg-indigo-50/80' 
+                      : 'border-gray-200 bg-gray-50 hover:border-indigo-300'
+                  }`}
+                >
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                    !formData.fileLink ? 'bg-indigo-100 text-indigo-600 shadow-sm' : 'bg-gray-100 text-gray-400'
+                  }`}>
+                    <Upload size={24} />
+                  </div>
+                  <div>
+                    <span className={`block font-black text-xs uppercase tracking-widest ${!formData.fileLink ? 'text-indigo-700' : 'text-gray-500'}`}>
+                      Upload File
+                    </span>
+                    <span className="block mt-1 text-[10px] text-gray-400 font-medium">Click to select file for Drive</span>
+                  </div>
+                  <input 
+                    type="file" 
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {file && !formData.fileLink && (
+                    <div className="mt-2 text-[10px] bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-full truncate max-w-[200px] font-bold shadow-sm border border-indigo-200">
+                      {file.name}
+                    </div>
+                  )}
                 </div>
-                <input 
-                  type="file" 
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="text-[10px] text-gray-400 w-full"
-                />
-              </div>
 
-              <div className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${formData.fileLink ? 'border-post-blue bg-blue-50/10' : 'border-gray-50'}`} onClick={() => setFile(null)}>
-                <div className="flex items-center gap-3 mb-3">
-                  <LinkIcon size={18} className="text-post-blue" />
-                  <span className="font-black text-[10px] uppercase tracking-widest">EXTERNAL LINK</span>
+                <div 
+                  onClick={() => setFile(null)}
+                  className={`p-6 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-center gap-3 ${
+                    formData.fileLink 
+                      ? 'border-emerald-500 bg-emerald-50/50 shadow-inner hover:bg-emerald-50/80' 
+                      : 'border-gray-200 border-dashed bg-gray-50 hover:border-emerald-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                      formData.fileLink ? 'bg-emerald-100 text-emerald-600 shadow-sm' : 'bg-gray-100 text-gray-400'
+                    }`}>
+                      <LinkIcon size={20} />
+                    </div>
+                    <div>
+                      <span className={`block font-black text-xs uppercase tracking-widest ${formData.fileLink ? 'text-emerald-700' : 'text-gray-500'}`}>
+                        External Link
+                      </span>
+                      <span className="block text-[10px] text-gray-400 font-medium">Provide direct URL</span>
+                    </div>
+                  </div>
+                  <div className="relative mt-2">
+                    <input 
+                      type="url"
+                      placeholder="https://"
+                      value={formData.fileLink}
+                      onChange={(e) => {
+                        setFormData({ ...formData, fileLink: e.target.value });
+                        setFile(null);
+                      }}
+                      className={`w-full h-11 bg-white border rounded-lg pl-3 pr-3 text-xs font-medium placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all ${
+                        formData.fileLink ? 'border-emerald-300 text-emerald-800 shadow-sm' : 'border-gray-200'
+                      }`}
+                    />
+                  </div>
                 </div>
-                <input 
-                  type="url"
-                  value={formData.fileLink}
-                  onChange={(e) => setFormData({ ...formData, fileLink: e.target.value })}
-                  className="w-full h-10 bg-white border border-gray-100 rounded px-2 text-[10px]"
-                />
               </div>
             </div>
 
@@ -426,7 +534,9 @@ export default function Admin() {
             </button>
           </form>
         </motion.div>
-      ) : (
+      )}
+      
+      {activeTab === 'manage' && (
         <div className="space-y-6">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
@@ -506,6 +616,62 @@ export default function Admin() {
             </div>
           )}
         </div>
+      )}
+
+      {activeTab === 'news' && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-3xl mx-auto bg-white rounded-lg shadow-xl border border-gray-100 p-8 md:p-10 border-t-8 border-post-red-primary mb-8"
+        >
+          <form onSubmit={handleNewsSubmit} className="space-y-6">
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Publish Latest News</label>
+              <textarea 
+                value={newsContent}
+                onChange={(e) => setNewsContent(e.target.value)}
+                rows={3}
+                placeholder="Enter the news item to scroll on the home page..."
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 outline-none focus:border-post-red-primary transition-all resize-none font-medium text-sm"
+                required
+              />
+            </div>
+            <button 
+              type="submit"
+              disabled={isSubmitting || !newsContent.trim()}
+              className="w-full h-14 bg-post-red-primary text-white rounded-lg font-black shadow-lg shadow-red-900/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-3 uppercase tracking-[0.2em] text-xs"
+            >
+              {isSubmitting ? <Loader2 className="animate-spin" /> : <FileText />}
+              Publish to Marquee
+            </button>
+          </form>
+
+          <div className="mt-12 space-y-4">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Active News Items</h3>
+            {loadingNews ? (
+              <div className="flex justify-center p-4">
+                <Loader2 className="animate-spin text-post-red-primary" />
+              </div>
+            ) : newsItems.length > 0 ? (
+              <div className="space-y-3">
+                {newsItems.map(item => (
+                  <div key={item.id} className="flex items-start justify-between bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <p className="text-sm font-medium text-gray-800 pr-4">{item.content}</p>
+                    <button 
+                      onClick={() => handleDeleteNews(item.id, item.content)}
+                      className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                      title="Delete News"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 italic">No news items currently active.</p>
+            )}
+          </div>
+        </motion.div>
       )}
 
       {/* Edit Modal */}

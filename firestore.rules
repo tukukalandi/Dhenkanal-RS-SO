@@ -20,7 +20,7 @@ service cloud.firestore {
     }
 
     function isValidDocument(data) {
-      return data.productId in ['Savings', 'PLI/RPLI', 'Domestic Mails', 'International Mails', 'Parcels', 'BD/CCS', 'PO Orders/Rules', 'Official Documents', 'Others'] &&
+      return data.productId in ['Savings', 'PLI/RPLI', 'Domestic Mails', 'International Mails', 'Parcels', 'BD/CCS', 'Philately', 'PO Orders/Rules', 'Official Documents', 'Others'] &&
              data.fileName is string && data.fileName.size() <= 256 &&
              data.fileLink is string && data.fileLink.size() <= 1024 &&
              data.uploadedBy == request.auth.uid &&
@@ -28,6 +28,12 @@ service cloud.firestore {
              (data.subCategory == null || (data.subCategory is string && data.subCategory.size() <= 128)) &&
              (data.description == null || (data.description is string && data.description.size() <= 2048)) &&
              (data.driveFileId == null || (data.driveFileId is string && data.driveFileId.size() <= 256));
+    }
+
+    function isValidNews(data) {
+      return data.content is string && data.content.size() <= 1024 &&
+             data.createdAt == request.time &&
+             data.createdBy == request.auth.uid;
     }
 
     // Documents collection
@@ -48,6 +54,16 @@ service cloud.firestore {
                   );
       
       allow delete: if isAdmin() || (isSignedIn() && resource.data.uploadedBy == request.auth.uid);
+    }
+
+    // News collection
+    match /news/{newsId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidNews(request.resource.data) &&
+                    request.resource.data.keys().hasAll(['content', 'createdAt', 'createdBy']) &&
+                    request.resource.data.keys().size() == 3;
+      allow delete: if isAdmin();
+      allow update: if false;
     }
   }
 }
