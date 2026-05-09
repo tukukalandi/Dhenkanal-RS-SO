@@ -119,7 +119,7 @@ export default function Header() {
               }}
               className={`flex items-center px-4 md:px-6 py-3 h-full text-white font-bold text-[10px] md:text-xs transition-all uppercase tracking-wider gap-2 whitespace-nowrap ${isServicesOpen ? 'bg-post-red-dark' : 'hover:bg-post-red-dark'}`}
             >
-              Our Services
+              Service Request
               <ChevronDown size={12} className={isServicesOpen ? 'rotate-180 transition-transform' : 'transition-transform'} />
             </button>
             
@@ -241,7 +241,7 @@ export default function Header() {
                 </div>
 
                 <div className="mt-8">
-                  <h3 className="text-[10px] font-black text-post-red-primary uppercase tracking-[0.2em] mb-4 px-4">Our Services</h3>
+                  <h3 className="text-[10px] font-black text-post-red-primary uppercase tracking-[0.2em] mb-4 px-4">Service Request</h3>
                   {serviceItems.map((serviceName) => (
                     <button 
                        key={serviceName} 

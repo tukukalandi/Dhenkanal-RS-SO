@@ -119,6 +119,7 @@ export default function Admin() {
   const [loadingDocs, setLoadingDocs] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
+  const [editingNewsItem, setEditingNewsItem] = useState<{id: string, content: string} | null>(null);
 
   useEffect(() => {
     if (user && activeTab === 'manage') {
@@ -287,6 +288,26 @@ export default function Admin() {
     }
   };
 
+  const handleNewsUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingNewsItem) return;
+    
+    setIsSubmitting(true);
+    try {
+      const docRef = doc(db, 'news', editingNewsItem.id);
+      await updateDoc(docRef, {
+        content: editingNewsItem.content
+      });
+      setNewsItems(prev => prev.map(d => d.id === editingNewsItem.id ? editingNewsItem : d));
+      setEditingNewsItem(null);
+      setStatus({ type: 'success', message: 'News updated successfully.' });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `news/${editingNewsItem.id}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
@@ -405,7 +426,7 @@ export default function Admin() {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${activeTab === 'services' ? 'bg-white text-post-red-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
             <FileText size={14} />
-            Our Services
+            Service Request
           </button>
         </div>
       </div>
@@ -694,13 +715,22 @@ export default function Admin() {
                 {newsItems.map(item => (
                   <div key={item.id} className="flex items-start justify-between bg-gray-50 p-4 rounded-lg border border-gray-100">
                     <p className="text-sm font-medium text-gray-800 pr-4">{item.content}</p>
-                    <button 
-                      onClick={() => handleDeleteNews(item.id, item.content)}
-                      className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                      title="Delete News"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => setEditingNewsItem(item)}
+                        className="text-gray-400 hover:text-post-yellow transition-colors p-1"
+                        title="Edit News"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteNews(item.id, item.content)}
+                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                        title="Delete News"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -710,6 +740,51 @@ export default function Admin() {
           </div>
         </motion.div>
       )}
+
+      {/* Edit News Modal */}
+      <AnimatePresence>
+        {editingNewsItem && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+              onClick={() => setEditingNewsItem(null)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl shadow-2xl z-[70] overflow-hidden border border-gray-100 max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-6 bg-post-red-primary text-white flex justify-between items-center">
+                <h3 className="text-lg font-black uppercase tracking-widest">Edit News Item</h3>
+                <button onClick={() => setEditingNewsItem(null)} className="p-2 hover:bg-white/10 rounded-full"><X size={20} /></button>
+              </div>
+              <form onSubmit={handleNewsUpdate} className="p-8 space-y-6">
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">News Content</label>
+                  <textarea 
+                    value={editingNewsItem.content}
+                    onChange={(e) => setEditingNewsItem({ ...editingNewsItem, content: e.target.value })}
+                    rows={4}
+                    className="w-full bg-gray-50 border border-gray-100 rounded-lg p-4 font-medium resize-none text-sm"
+                    required
+                  />
+                </div>
+                <button 
+                  type="submit"
+                  disabled={isSubmitting || !editingNewsItem.content.trim()}
+                  className="w-full h-12 bg-post-red-primary text-white rounded-lg font-black shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 mt-4 uppercase tracking-[0.2em] text-[10px]"
+                >
+                  {isSubmitting ? <Loader2 className="animate-spin mx-auto" /> : 'Save Changes'}
+                </button>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {activeTab === 'services' && (
         <motion.div 
