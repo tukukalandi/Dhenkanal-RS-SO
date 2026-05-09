@@ -20,7 +20,6 @@ export default function Header() {
 
   const menuItems = [
     { name: 'Home', path: '/' },
-    { name: 'Helpdesk', path: '/helpdesk' },
   ];
 
   const serviceItems = [
@@ -101,7 +100,7 @@ export default function Header() {
 
       {/* Bar 3: Navigation */}
       <nav className="flex min-h-10 md:min-h-12 bg-post-red-primary text-white items-center px-2 md:px-6 relative z-40 shadow-lg">
-        <div className="flex flex-wrap items-stretch h-full w-full">
+        <div className="flex flex-wrap items-stretch h-full w-full overflow-visible">
           {menuItems.map((item) => (
             <Link 
               key={item.path}
@@ -118,7 +117,7 @@ export default function Header() {
                 setIsServicesOpen(!isServicesOpen);
                 setIsOthersOpen(false);
               }}
-              className={`flex items-center px-4 md:px-6 h-full text-white font-bold text-[10px] md:text-xs transition-all uppercase tracking-wider gap-2 whitespace-nowrap ${isServicesOpen ? 'bg-post-red-dark' : 'hover:bg-post-red-dark'}`}
+              className={`flex items-center px-4 md:px-6 py-3 h-full text-white font-bold text-[10px] md:text-xs transition-all uppercase tracking-wider gap-2 whitespace-nowrap ${isServicesOpen ? 'bg-post-red-dark' : 'hover:bg-post-red-dark'}`}
             >
               Our Services
               <ChevronDown size={12} className={isServicesOpen ? 'rotate-180 transition-transform' : 'transition-transform'} />
@@ -155,7 +154,7 @@ export default function Header() {
                 setIsOthersOpen(!isOthersOpen);
                 setIsServicesOpen(false);
               }}
-              className={`flex items-center px-4 md:px-6 h-full text-white font-bold text-[10px] md:text-xs transition-all uppercase tracking-wider gap-2 whitespace-nowrap ${isOthersOpen ? 'bg-post-red-dark' : 'hover:bg-post-red-dark'}`}
+              className={`flex items-center px-4 md:px-6 py-3 h-full text-white font-bold text-[10px] md:text-xs transition-all uppercase tracking-wider gap-2 whitespace-nowrap ${isOthersOpen ? 'bg-post-red-dark' : 'hover:bg-post-red-dark'}`}
             >
               Others
               <ChevronDown size={12} className={isOthersOpen ? 'rotate-180 transition-transform' : 'transition-transform'} />
