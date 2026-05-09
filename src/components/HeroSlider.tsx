@@ -58,7 +58,7 @@ const slides = [
       btnBg: 'bg-orange-500 text-white',
       arrowBg: 'bg-white text-orange-900'
     }
-  }
+  },
 ];
 
 export default function HeroSlider() {
@@ -121,8 +121,11 @@ export default function HeroSlider() {
           <img 
             src={slides[current].image} 
             alt={slides[current].title}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover text-transparent"
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
           />
           <div className={`absolute inset-0 bg-black/60 md:bg-gradient-to-r ${slides[current].style.gradient} md:to-transparent`} />
 
