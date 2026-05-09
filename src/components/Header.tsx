@@ -171,6 +171,7 @@ export default function Header() {
                   {[
                     { name: 'India Post Website', url: 'https://www.indiapost.gov.in/' },
                     { name: 'Dhenkanal Postal Division', url: 'https://dhenkanalpostaldivision.org/' },
+                    { name: 'Staff Site', url: 'https://staffsite-dklrs.vercel.app/' },
                     { name: 'Office Directory', url: 'https://office-directory.vercel.app/' },
                     { name: 'Contact Us', url: '#contact' },
                     { name: 'About Us', url: '#about' },
@@ -262,6 +263,7 @@ export default function Header() {
                   {[
                     { name: 'India Post Website', url: 'https://www.indiapost.gov.in/' },
                     { name: 'Dhenkanal Postal Division', url: 'https://dhenkanalpostaldivision.org/' },
+                    { name: 'Staff Site', url: 'https://staffsite-dklrs.vercel.app/' },
                     { name: 'Office Directory', url: 'https://office-directory.vercel.app/' },
                   ].map((link) => (
                     <a 
