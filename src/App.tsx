@@ -6,6 +6,7 @@ import BottomNav from './components/BottomNav';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import CategoryView from './pages/CategoryView';
+import OfficeSite from './pages/OfficeSite';
 import { AuthProvider } from './contexts/AuthContext';
 import { Phone, Mail, Clock, MapPin, MessageSquare } from 'lucide-react';
 
@@ -130,6 +131,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/helpdesk" element={<Helpdesk />} />
+              <Route path="/officesite" element={<OfficeSite />} />
               <Route path="/category/:categoryId" element={<CategoryView />} />
             </Routes>
           </div>
